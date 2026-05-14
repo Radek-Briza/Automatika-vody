@@ -145,7 +145,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -Wall -fdata-sections -ffunction-sections -fstack-usage -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -175,74 +175,92 @@
 			[
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Core/Inc"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../App"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../SubGHz_Phy/App"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../SubGHz_Phy/Target"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/STM32WLxx_HAL_Driver/Inc"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/STM32WLxx_HAL_Driver/Inc/Legacy"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Utilities/trace/adv_trace"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Utilities/misc"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Utilities/timer"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Utilities/lpm/tiny_lpm"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/Source/include"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/CMSIS/RTOS2/Include"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/BSP/STM32WLxx_Nucleo"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32WLxx/Include"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Middlewares/Third_Party/SubGHz_Phy/radio_driver"
 				},
 				{
 					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "D:/Automatiky vody/cmake/stm32cubemx/../../Drivers/CMSIS/Include"
 				}
 			],

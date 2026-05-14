@@ -23,6 +23,8 @@ void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskC
 void OnRxTimeout(void);
 void OnRxError(void);
 void OnTxTimeout(void);
+void RadioCadTimeoutIrq( void *context );
+void ReceiveTimeout(void *context);
 #ifdef __cplusplus
 }
 #endif
@@ -35,12 +37,14 @@ public:
 	}
 	void Init(const struct Radio_s *Radio_, bool MasterMode_ = false);
 	bool SendRquest(Packet::PacketType Type);
-	 Packet::PacketType GetReceivedDataType() const { return DataType; }
+	Packet::PacketType GetReceivedDataType() const { return DataType; }
+	const std::vector<uint8_t>& GetReceivedPayload() const { return packet.Payload_output; }	
 	static bool DataAvailable;
 	static bool DataOverload; 
 	static bool RequestSent;
 	static bool MasterMode;
 	static bool SlaveNotResponding;
+	static uint16_t timeout;
 	static Packet::PacketType ReceivedDataType;
 	
 
@@ -58,10 +62,10 @@ private:
 	static  const uint32_t ResponseTimeout = 5000U; /* ms*/
 	static RadioEvents_t RadioEvents;
 	static TimerEvent_t CadTimer;
+	static TimerEvent_t RxTimeoutTimer;
 	static Packet packet;
-	//static std::vector<uint8_t> Data; // Buffer pro příjem dat z rádia
     static Packet::PacketType DataType; // Proměnná pro uložení typu dat z příchozího packetu
-
+	
 	friend void RadioCadTimeoutIrq(void *context);
 	friend void OnCadDone(bool channelActivityDetected);
 	friend void OnTxTimeout(void);
@@ -69,6 +73,7 @@ private:
 	friend void OnRxTimeout(void);
 	friend void OnRxError(void);
 	friend void OnTxDone(void);
+	friend void ReceiveTimeout(void *context);
 };
 
 #endif /* DATATRANSMIT_HPP_ */
