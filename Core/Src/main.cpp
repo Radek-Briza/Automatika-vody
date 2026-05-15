@@ -18,8 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os2.h"
-#include "FreeRTOS.h"
 #include "adc.h"
 #include "crc.h"
 #include "dma.h"
@@ -27,7 +25,11 @@
 #include "tim.h"
 #include "wwdg.h"
 #include "gpio.h"
-
+extern "C"
+{
+#include "FreeRTOS.h"
+#include "task.h"
+}
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "sys_app.h"
@@ -54,6 +56,46 @@
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
+
+void GreenLedTask(void* argument)
+{
+    (void)argument;
+
+    while (true)
+    {
+       BSP_LED_Toggle(LED_BLUE);
+        vTaskDelay(pdMS_TO_TICKS(250));
+    }
+}
+
+void RedLedTask(void* argument)
+{
+    (void)argument;
+
+    while (true)
+    {
+        BSP_LED_Toggle(LED_GREEN);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+extern "C" void vApplicationMallocFailedHook(void)
+{
+    printf("Malloc failed\r\n");
+  for (;;)
+    {
+    }
+}
+
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char*)
+{
+    printf("Stack overflow\r\n");
+    for (;;)
+    {
+    }
+}
+
+
 
 /* USER CODE END PV */
 
@@ -106,12 +148,11 @@ extern "C" int main(void)
   MX_CRC_Init();
   MX_ADC_Init();
   /* USER CODE BEGIN 2 */
-  App Application;
+[[maybe_unused]] App Application;
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in cmsis_os2.c) */
-  MX_FREERTOS_Init();
+  
 
   /* Initialize leds */
   BSP_LED_Init(LED_BLUE);
@@ -135,12 +176,33 @@ extern "C" int main(void)
   }
 
   printf("\rAutomatika vody ver 1.00 \r\n") ;
+   
+   BaseType_t ok1 = xTaskCreate(
+        GreenLedTask,
+        "Green",
+        256,
+        nullptr,
+        2,
+        nullptr);
 
-   Application.init();
-   Application.loop();
+    BaseType_t ok2 = xTaskCreate(
+        RedLedTask,
+        "Red",
+        256,
+        nullptr,
+        2,
+        nullptr);
+
+    configASSERT(ok1 == pdPASS);
+    configASSERT(ok2 == pdPASS);
+
+     vTaskStartScheduler(); 
+
+ //  Application.init();
+  // Application.loop();
 
   /* Start scheduler */
-  //osKernelStart();
+  //´´osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 
