@@ -143,10 +143,8 @@ void UsageFault_Handler(void)
 /**
   * @brief This function handles System service call via SWI instruction.
   */
- 
 void SVC_Handler(void)
 {
-  extern void vPortSVCHandler(void);
   /* USER CODE BEGIN SVCall_IRQn 0 */
   vPortSVCHandler();
   /* USER CODE END SVCall_IRQn 0 */

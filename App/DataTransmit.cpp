@@ -59,21 +59,25 @@ void RxTimeoutTimerCallback(TimerHandle_t xTimer){
 extern "C" void OnCadDone( bool channelActivityDetected ){
 	if(channelActivityDetected){
 		DataTransmit::RadioDriver->Rx(DataTransmit::RxReceiverMaxRunTime);
-		 auto Ok = xTimerStop(DataTransmit::CadTimer,0);
-		 configASSERT(Ok == pdPASS);
+		BaseType_t hpw = pdFALSE;
+		auto Ok = xTimerStopFromISR(DataTransmit::CadTimer,&hpw);
+		configASSERT(Ok == pdPASS);
 		printf(">>>>Start RX\n");
 	}else{
 		// Channel is clear, proceed with transmission
-		xTimerStart(DataTransmit::CadTimer,0);
+		BaseType_t hpw = pdFALSE;
+		auto Ok = xTimerStartFromISR(DataTransmit::CadTimer,&hpw);
+		configASSERT(Ok == pdPASS);
 	}
 }
 
 extern "C" void OnTxDone(void){
 	if( DataTransmit::MasterMode == true){
 		DataTransmit::timeout = 0;
-		
 		DataTransmit::RadioDriver->Rx(0); // Po odeslání požadavku přepneme rádio do přijímacího režimu
-		
+		BaseType_t hpw = pdFALSE;
+		auto Ok = xTimerStartFromISR(DataTransmit::RxTimeoutTimer,&hpw);
+		configASSERT(Ok == pdPASS);
 		printf("Transmission done, starting RX\n");
 		return; 
 	}
@@ -84,7 +88,7 @@ extern "C" void OnTxDone(void){
 
 /* Callback functions - Rx complete */
 extern "C" void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskCfo){
-	auto Ok = xTimerStop(DataTransmit::CadTimer,0);
+	auto Ok = xTimerStopFromISR(DataTransmit::CadTimer,nullptr);
 	configASSERT(Ok == pdPASS);
 	DataTransmit::RequestSent = false;
 	printf("Received packet: size=%u, rssi=%d, snr=%d\n", size, rssi, LoraSnr_FskCfo);
@@ -218,8 +222,8 @@ bool DataTransmit::SendRquest(Packet::PacketType Type){
 	RadioDriver->Standby( );
 	RadioDriver->Send(packet.Packet_output.data(), packet.Packet_output.size());
 
-	auto Ok = xTimerStart(DataTransmit::RxTimeoutTimer,0);
-	configASSERT(Ok == pdPASS);
+	//auto Ok = xTimerStart(DataTransmit::RxTimeoutTimer,0);
+	//configASSERT(Ok == pdPASS);
 	return true;
 }
 
