@@ -19,12 +19,20 @@ bool DataTransmit::DataAvailable = false;
 bool DataTransmit::DataOverload = false;
 const struct Radio_s* DataTransmit::RadioDriver = nullptr;
 RadioEvents_t DataTransmit::RadioEvents = {};
-TimerEvent_t DataTransmit::CadTimer = {};
-TimerEvent_t DataTransmit::RxTimeoutTimer = {};
+TimerHandle_t DataTransmit::CadTimer= nullptr;
+TimerHandle_t DataTransmit::RxTimeoutTimer = nullptr;
 Packet DataTransmit::packet = {};
 bool DataTransmit::SlaveNotResponding = false;
 Packet::PacketType DataTransmit::DataType = Packet::Type_undefined;
 
+
+[[maybe_unused]] 
+void CadTimerCallback(TimerHandle_t xTimer)
+{   
+   DataTransmit::RadioDriver->Standby( );
+   DataTransmit::RadioDriver->SetChannel(CHANNEL);
+   DataTransmit::RadioDriver->StartCad( );
+}
 
 extern "C"  [[maybe_unused]] 
 void RadioCadTimeoutIrq( void *context ){
@@ -32,19 +40,17 @@ void RadioCadTimeoutIrq( void *context ){
 		return; // pokud jsme v master modu, neprovádíme CAD
 	}
 	DataTransmit::RadioDriver->Standby( );
-	DataTransmit::RadioDriver->SetChannel(CHANNEL);
 	DataTransmit::RadioDriver->StartCad( );
 	printf("Start CAD\n");
 }
 
-extern "C" [[maybe_unused]] 
-void ReceiveTimeout(void *context){
+[[maybe_unused]] 
+void RxTimeoutTimerCallback(TimerHandle_t xTimer){
 	if( DataTransmit::MasterMode == true){
 		DataTransmit::RadioDriver->Standby( );
 		if(DataTransmit::RequestSent){
 			DataTransmit::RequestSent = false;
 			DataTransmit::SlaveNotResponding = true;
-			TimerStop(&DataTransmit::RxTimeoutTimer);
 			printf("RX Timeout, slave not responding\n");
 		}
 	}	
@@ -52,33 +58,34 @@ void ReceiveTimeout(void *context){
 
 extern "C" void OnCadDone( bool channelActivityDetected ){
 	if(channelActivityDetected){
-		DataTransmit::RadioDriver->Rx(1200);
-		TimerStop(&DataTransmit::CadTimer );
+		DataTransmit::RadioDriver->Rx(DataTransmit::RxReceiverMaxRunTime);
+		 auto Ok = xTimerStop(DataTransmit::CadTimer,0);
+		 configASSERT(Ok == pdPASS);
 		printf(">>>>Start RX\n");
 	}else{
 		// Channel is clear, proceed with transmission
-		TimerStart(&DataTransmit::CadTimer );
+		xTimerStart(DataTransmit::CadTimer,0);
 	}
 }
 
-
-void OnTxDone(void){
+extern "C" void OnTxDone(void){
 	if( DataTransmit::MasterMode == true){
 		DataTransmit::timeout = 0;
+		
 		DataTransmit::RadioDriver->Rx(0); // Po odeslání požadavku přepneme rádio do přijímacího režimu
-		TimerStart(&DataTransmit::RxTimeoutTimer);
+		
 		printf("Transmission done, starting RX\n");
 		return; 
 	}
 	DataTransmit::RadioDriver->Standby( );
-	DataTransmit::RadioDriver->SetChannel(CHANNEL);
 	DataTransmit::RadioDriver->StartCad( );
 	printf("Transmission done, restarting CAD\n");
 };
 
 /* Callback functions - Rx complete */
 extern "C" void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskCfo){
-	TimerStop(&DataTransmit::RxTimeoutTimer);
+	auto Ok = xTimerStop(DataTransmit::CadTimer,0);
+	configASSERT(Ok == pdPASS);
 	DataTransmit::RequestSent = false;
 	printf("Received packet: size=%u, rssi=%d, snr=%d\n", size, rssi, LoraSnr_FskCfo);
 	
@@ -166,13 +173,24 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
  	
 	/* CAD sampler timer setup */
 	if(MasterMode == false){
-		TimerInit( &CadTimer,RadioCadTimeoutIrq );
-		TimerSetValue( &CadTimer,CAD_sample );
-		TimerStart( &CadTimer );	
+
+		CadTimer = xTimerCreate(
+        "Cad sampler",
+        pdMS_TO_TICKS(CAD_sample ),
+        pdTRUE,
+        nullptr,
+        CadTimerCallback);
+    	configASSERT(CadTimer != nullptr);
 	}
 	else{
-		TimerInit( &RxTimeoutTimer,ReceiveTimeout );
-		TimerSetValue( &RxTimeoutTimer,ResponseTimeout );
+		// one shot timer - response overtime 
+		RxTimeoutTimer = xTimerCreate(
+        "Rx timeout",
+        pdMS_TO_TICKS(ResponseTimeout),
+        pdFALSE,
+        nullptr,
+        RxTimeoutTimerCallback);
+    	configASSERT(RxTimeoutTimer != nullptr);
 	}
 		
 	DataAvailable = false;		
@@ -180,7 +198,7 @@ void DataTransmit::Init(const struct Radio_s *Radio_,bool MasterMode_){
 	printf("DataTransmit initialized\n");
 }
 
-/* odeslat požadavek na data */
+/* send data  request  */
 bool DataTransmit::SendRquest(Packet::PacketType Type){
 	
 	/* create packet */
@@ -199,6 +217,9 @@ bool DataTransmit::SendRquest(Packet::PacketType Type){
 	SlaveNotResponding = false;
 	RadioDriver->Standby( );
 	RadioDriver->Send(packet.Packet_output.data(), packet.Packet_output.size());
+
+	auto Ok = xTimerStart(DataTransmit::RxTimeoutTimer,0);
+	configASSERT(Ok == pdPASS);
 	return true;
 }
 

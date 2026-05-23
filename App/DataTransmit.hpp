@@ -11,6 +11,9 @@
 #include "radio.h"
 #include "timer.h"
 #include "Packet.hpp"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,10 +62,13 @@ private:
 	const uint32_t MaxPayloadSize = Packet::max_packet_size;
 	static const struct Radio_s *RadioDriver;
 	static const uint32_t CAD_sample = 200U; /* ms*/
+	static const uint32_t RxReceiverMaxRunTime =  1200;	
 	static  const uint32_t ResponseTimeout = 5000U; /* ms*/
 	static RadioEvents_t RadioEvents;
-	static TimerEvent_t CadTimer;
-	static TimerEvent_t RxTimeoutTimer;
+	static TimerHandle_t CadTimer;
+	static TimerHandle_t RxTimeoutTimer;
+	//static TimerEvent_t CadTimer;
+	//static TimerEvent_t RxTimeoutTimer;
 	static Packet packet;
     static Packet::PacketType DataType; // Proměnná pro uložení typu dat z příchozího packetu
 	
@@ -73,7 +79,8 @@ private:
 	friend void OnRxTimeout(void);
 	friend void OnRxError(void);
 	friend void OnTxDone(void);
-	friend void ReceiveTimeout(void *context);
+	friend void RxTimeoutTimerCallback(TimerHandle_t xTimer);
+	friend void CadTimerCallback(TimerHandle_t xTimer);
 };
 
 #endif /* DATATRANSMIT_HPP_ */

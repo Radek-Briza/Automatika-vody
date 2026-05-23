@@ -21,7 +21,7 @@ void RequestSendTask(void* argument)
 { 
     while (true)
     {
-       vTaskDelay(pdMS_TO_TICKS(5000));
+       vTaskDelay(pdMS_TO_TICKS(10000));
 	   BSP_LED_Toggle(LED_BLUE);
 	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
 	   BSP_LED_Toggle(LED_BLUE);

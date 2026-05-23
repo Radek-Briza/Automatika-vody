@@ -199,28 +199,6 @@ extern "C" int main(void)
 
     configASSERT(ResponseHandlerTaskHandler == pdPASS);
 
-  /*
-   BaseType_t ok1 = xTaskCreate(
-        GreenLedTask,
-        "Green",
-        256,
-        nullptr,
-        2,
-        nullptr);
-
-    BaseType_t ok2 = xTaskCreate(
-        RedLedTask,
-        "Red",
-        256,
-        nullptr,
-        2,
-        nullptr);
-
-    configASSERT(ok1 == pdPASS);
-    configASSERT(ok2 == pdPASS);
-
-    */
-  
   vTaskStartScheduler(); 
 
 
