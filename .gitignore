@@ -10,3 +10,6 @@
 **/*.bak
 **/*.obj
 **/*.su
+build/
+Debug/
+Release/
