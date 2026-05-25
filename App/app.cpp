@@ -12,6 +12,7 @@
 #include  "DataTransmit.hpp"
 #include "Message.hpp"
 #include "WdtSystemTask.hpp"
+#include "Common.hpp"
 
 	
  QueueHandle_t QueuePumpControl = nullptr;
@@ -35,10 +36,11 @@ void InitApplication(void){
 [[maybe_unused]] 
 void RequestSendTask(void* argument){ 
     while (true){
-       vTaskDelay(pdMS_TO_TICKS(5000));
+       vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
 	   BSP_LED_Toggle(LED_BLUE);
 	   DataTransmit::GetInstance().SendRquest(Packet::Level_request);
 	   BSP_LED_Toggle(LED_BLUE);
+	   gAliveMask.fetch_or(TASK_REQ_SENDER_BIT);
     }
 }
 
@@ -57,8 +59,8 @@ void ResponseHandlerTask(void* argument){
 				uint16_t level_value = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);  
 				uint16_t  level_status = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 1);  
 				BaseType_t ok;
+
 				/* display */
-				
 				msgDisplay.MsgType = MsgDataType::LevelData;
 				msgDisplay.Data = level_value; 
 				ok = xQueueSend(
@@ -100,6 +102,6 @@ void ResponseHandlerTask(void* argument){
 			BSP_LED_Toggle(LED_RED);
 		}
 
-		 gAliveMask.fetch_or(TASK_APP_BIT);
+		gAliveMask.fetch_or(TASK_APP_BIT);
 	}
 }

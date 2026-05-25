@@ -22,6 +22,7 @@
 #include "crc.h"
 #include "dma.h"
 #include "tim.h"
+//#include "wwdg.h"
 #include "gpio.h"
 
 
@@ -35,7 +36,7 @@
 #include "App.hpp"
 #include "PumpControl.hpp"
 #include "DisplayModule.hpp"
-#include "WdtSystemTask.hpp"
+#include  "WdtSystemTask.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -158,7 +159,7 @@ extern "C" int main(void)
     Error_Handler();
   }
 
-  printf("\rAutomatika vody ver 1.00 \r\n") ;
+  printf("\r\nAutomatika vody ver 1.00 \r\n") ;
    
  /* create tasks */
  auto  Create1 = xTaskCreate(
@@ -181,7 +182,7 @@ extern "C" int main(void)
 
     configASSERT(Create2 == pdPASS);
   
-    auto Create4 =  xTaskCreate(
+    auto Create3 =  xTaskCreate(
       DisplayTask,
       "Display",
       256,
@@ -189,18 +190,17 @@ extern "C" int main(void)
       2,
       nullptr);
   
-    configASSERT(Create4 == pdPASS);
+    configASSERT(Create3 == pdPASS);
 
-    /* register wdt task*/
-    auto Create5 =  xTaskCreate(
+ auto Create4 =  xTaskCreate(
       WdtSupervisorTask,
-      "WDT task",
+      "Wdt task",
       256,
       nullptr,
       2,
       nullptr);
   
-    configASSERT(Create5 == pdPASS);
+    configASSERT(Create4 == pdPASS);
   
   InitApplication();
 

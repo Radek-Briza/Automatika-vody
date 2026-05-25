@@ -22,6 +22,9 @@
 #include "stm32wlxx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+void xPortPendSVHandler( void ) __attribute__( ( naked ) );
+void xPortSysTickHandler( void );
+void vPortSVCHandler( void ) __attribute__( ( naked ) );
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

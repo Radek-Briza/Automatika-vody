@@ -1,11 +1,14 @@
 
 #include "FreeRTOS.h" // IWYU pragma: keep.
+#include "Main.h"
 #include "task.h"
 #include "Message.hpp"
 #include <cstdio>
 #include "timers.h"
 #include "PumpControl.hpp"
 #include "WdtSystemTask.hpp"
+
+
 
 constexpr uint32_t LEVEL_L = (1u << 0);
 constexpr uint32_t LEVEL_UNDER_M = (1u << 1);
@@ -21,10 +24,23 @@ static TimerHandle_t PumpRunTimer = nullptr;
 [[maybe_unused]] 
 void PumpOvertimerCallback(TimerHandle_t xTimer)
 {
+    static  Message msgDisplay;
     if(PumpRun){
         PumpRun = false;
         ErrorCondition = true;
+         BSP_LED_On(LED_RED); 
         printf("Pump overtime - OFF\r\n");
+        BaseType_t ok;
+
+				/* display */
+				msgDisplay.MsgType = MsgDataType::PumpError;
+				msgDisplay.Data = 0; 
+				ok = xQueueSend(
+            	QueueDisplay,
+            	&msgDisplay ,
+            	pdMS_TO_TICKS(300)
+        	);
+            configASSERT(ok  == pdPASS) ;
     }
 }
 
@@ -83,6 +99,7 @@ void PumpControlTask(void* argument){
                             auto Ok = xTimerStart(PumpRunTimer,0U);
 		                    configASSERT(Ok == pdPASS);
                             // gpio pump on 
+                            BSP_LED_On(LED_GREEN); 
                             printf("Pump ON(1)\r\n");
                         }
                         break;
@@ -93,6 +110,7 @@ void PumpControlTask(void* argument){
                             auto Ok = xTimerStart(PumpRunTimer,0U);
 		                    configASSERT(Ok == pdPASS);
                             // gpio pump on 
+                            BSP_LED_On(LED_GREEN); 
                             printf("Pump ON(2)\r\n");
                         }
                       
@@ -106,6 +124,7 @@ void PumpControlTask(void* argument){
                              auto Ok = xTimerStop(PumpRunTimer,0U);
 		                    configASSERT(Ok == pdPASS);
                             // gpio pump on 
+                            BSP_LED_Off(LED_GREEN); 
                             printf("Pump OFF\r\n");
                         }
                 
@@ -113,6 +132,7 @@ void PumpControlTask(void* argument){
                 }
             }
         }
+        gAliveMask.fetch_or(TASK_PUMP_BIT);   
      } 
-     gAliveMask.fetch_or(TASK_PUMP_BIT);   
+    
 }

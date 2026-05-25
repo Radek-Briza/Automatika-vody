@@ -21,9 +21,16 @@ void DisplayTask(void* argument){
 
             /* new message */
         if(ok == pdPASS){
+            /* level */
             if(msg.MsgType == MsgDataType::LevelData ){        
 			    printf("Actual level value: %u cm\n", static_cast<unsigned int>(msg.Data));
             }
+            /* pump error  */
+            if(msg.MsgType == MsgDataType::PumpError ){        
+			    printf("!!! CHYBA CERPADLA !!!!\n");
+            }
+
+
         }
     }
 }

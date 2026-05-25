@@ -1,43 +1,42 @@
 
 
-#include "Main.h"
-#include "FreeRTOS.h"
-#include "iwdg.h"
-#include "task.h"
-#include <cstdio>
-#include "WdtSystemTask.hpp"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include <cstdio>
+#include <atomic>
+#include "iwdg.h"
+#include "WdtSystemTask.hpp"
+#include "Common.hpp"
+
+extern IWDG_HandleTypeDef hiwdg;
 
 
 std::atomic<uint32_t> gAliveMask{0};
 
-constexpr uint32_t EXPECTED_MASK = TASK_PUMP_BIT | TASK_APP_BIT;
-
-extern IWDG_HandleTypeDef hiwdg;
+constexpr uint32_t EXPECTED_MASK = TASK_PUMP_BIT | TASK_APP_BIT | TASK_REQ_SENDER_BIT ;
 
 [[maybe_unused]] 
 void WdtSupervisorTask(void*)
 {
 
-//MX_IWDG_Init();
+MX_IWDG_Init();
 
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-
+        vTaskDelay(pdMS_TO_TICKS(REQ_SEND_INTERVAL));
         uint32_t snapshot = gAliveMask.exchange(0);
 
         if (snapshot == EXPECTED_MASK)
         {
             printf("WDT OK\r\n");
-         //   HAL_IWDG_Refresh( &hiwdg);
+            HAL_IWDG_Refresh( &hiwdg);
 
         }
         else
         {
             printf("WDT FAIL\r\n");
-
-            BSP_LED_On(LED_RED); 
         }
 
         gAliveMask = 0;

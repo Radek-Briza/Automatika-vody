@@ -8,6 +8,7 @@ enum class MsgDataType {
     LevelData,
     LevelStatusData,
     BatteryLevel,
+    PumpError,
     CommunicationError,
     UnknownDataType
 };

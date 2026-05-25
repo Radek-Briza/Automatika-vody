@@ -11,6 +11,7 @@
 #include <cstring>
 #include <cstdio>
 
+
  uint16_t DataTransmit::timeout = 0;
 bool DataTransmit::MasterMode = false;
 bool DataTransmit::RequestSent = false;
