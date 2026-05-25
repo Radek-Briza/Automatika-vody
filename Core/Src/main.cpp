@@ -30,13 +30,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sys_app.h"
-#include "App.hpp"
-extern "C"
-{
 #include "FreeRTOS.h"
 #include "task.h"
-}
+#include "sys_app.h"
+#include "App.hpp"
+#include "PumpControl.hpp"
+#include "DisplayModule.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,17 +68,6 @@ void GreenLedTask(void* argument)
     }
 }
 
-[[maybe_unused]] 
-void RedLedTask(void* argument)
-{
-
-    while (true)
-    {
-        BSP_LED_Toggle(LED_GREEN);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
-
 extern "C" void vApplicationMallocFailedHook(void) 
 {
     printf("Malloc failed\r\n");
@@ -95,7 +83,6 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char*)
     {
     }
 }
-
 
 
 /* USER CODE END PV */
@@ -160,10 +147,6 @@ extern "C" int main(void)
   BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_RED);
 
-  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-  //BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
-  //BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
-  //BSP_PB_Init(BUTTON_SW3, BUTTON_MODE_EXTI);
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
   BspCOMInit.BaudRate   = 115200;
@@ -179,7 +162,7 @@ extern "C" int main(void)
   printf("\rAutomatika vody ver 1.00 \r\n") ;
    
  /* create tasks */
- auto requestSendTaskHandler = xTaskCreate(
+ auto  Create1 = xTaskCreate(
         RequestSendTask, 
         "RequestSend",
         256,
@@ -187,17 +170,31 @@ extern "C" int main(void)
         2,
         nullptr);
 
-    configASSERT(requestSendTaskHandler == pdPASS);
+    configASSERT(Create1 == pdPASS);
 
- auto ResponseHandlerTaskHandler = xTaskCreate(
+ auto Create2 = xTaskCreate(
         ResponseHandlerTask, 
-        "ResponseHandler",
+        "Response Handler",
         512,
         nullptr,
         2,
         nullptr);
 
-    configASSERT(ResponseHandlerTaskHandler == pdPASS);
+    configASSERT(Create2 == pdPASS);
+  
+    auto Create4 =  xTaskCreate(
+      DisplayTask,
+      "Display",
+      256,
+      nullptr,
+      2,
+      nullptr);
+  
+    configASSERT(Create4 == pdPASS);
+  
+  InitApplication();
+
+  InitPumpSystem() ; 
 
   vTaskStartScheduler(); 
 

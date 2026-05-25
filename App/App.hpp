@@ -17,7 +17,7 @@
 
 /* Payload parsing functions */
 template<typename T>
-inline uint32_t parse_le(const std::vector<uint8_t>& data, std::size_t index)
+inline uint32_t ParsePayload(const std::vector<uint8_t>& data, std::size_t index)
 {
     static_assert(
         std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t>,
@@ -32,7 +32,6 @@ inline uint32_t parse_le(const std::vector<uint8_t>& data, std::size_t index)
        printf("Error: Attempt to read beyond data bounds. Data size: %d, Requested offset: %d, Type size: %d\n",
               data.size(), offset, type_size);
               return 0xFFFFFFFFu; // Return max value to indicate error, or consider throwing an exception
-      //  throw std::out_of_range("Attempt to read beyond data bounds");
     }
 
     uint32_t result = 0;
@@ -49,6 +48,7 @@ inline uint32_t parse_le(const std::vector<uint8_t>& data, std::size_t index)
 extern "C" {
     void RequestSendTask(void* argument);
     void ResponseHandlerTask(void* argument);
+    void InitApplication(void);
 }
 
 #endif /* APP_HPP_ */

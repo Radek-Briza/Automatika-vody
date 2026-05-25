@@ -67,8 +67,6 @@ private:
 	static RadioEvents_t RadioEvents;
 	static TimerHandle_t CadTimer;
 	static TimerHandle_t RxTimeoutTimer;
-	//static TimerEvent_t CadTimer;
-	//static TimerEvent_t RxTimeoutTimer;
 	static Packet packet;
     static Packet::PacketType DataType; // Proměnná pro uložení typu dat z příchozího packetu
 	

@@ -38,9 +38,7 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../SubGHz_Phy/Target/radio_board_if.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../SubGHz_Phy/App/app_subghz_phy.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../SubGHz_Phy/App/subghz_phy_app.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/app.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DataTransmit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/Packet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/WdtSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/adc.c
@@ -59,6 +57,15 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/syscalls.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../startup_stm32wl55xx_cm4.s
+)
+
+# my apliaction 
+set(MyAplication_src
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../App/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DataTransmit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/Packet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/PumpControl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../App/DisplayModule.cpp
 )
 
 # STM32 HAL/LL Drivers
@@ -134,6 +141,7 @@ set(MX_LINK_LIBS
     Utilities
 	FreeRTOS
 	SubGHz_Phy
+    MyApp
    ${TOOLCHAIN_LINK_LIBRARIES}
 )
 # Interface library for includes and symbols
@@ -161,6 +169,12 @@ target_link_libraries(FreeRTOS PUBLIC stm32cubemx)
 add_library(SubGHz_Phy OBJECT)
 target_sources(SubGHz_Phy PRIVATE ${SubGHz_Phy_Src})
 target_link_libraries(SubGHz_Phy PUBLIC stm32cubemx)
+
+
+#create my utilities lib
+add_library(MyApp OBJECT) 
+target_sources(MyApp PRIVATE ${MyAplication_src})
+target_link_libraries(MyApp PUBLIC stm32cubemx)
 
 # Add STM32CubeMX generated application sources to the project
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})

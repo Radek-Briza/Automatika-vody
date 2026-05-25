@@ -7,7 +7,6 @@
 
 #include  "DataTransmit.hpp"
 #include  "RadioParams.hpp"
-#include "timer.h"
 #include <cassert>
 #include <cstring>
 #include <cstdio>
@@ -88,11 +87,13 @@ extern "C" void OnTxDone(void){
 
 /* Callback functions - Rx complete */
 extern "C" void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraSnr_FskCfo){
-	auto Ok = xTimerStopFromISR(DataTransmit::CadTimer,nullptr);
-	configASSERT(Ok == pdPASS);
 	DataTransmit::RequestSent = false;
 	printf("Received packet: size=%u, rssi=%d, snr=%d\n", size, rssi, LoraSnr_FskCfo);
 	
+	BaseType_t hpw = pdFALSE;
+	auto Ok = xTimerStopFromISR(DataTransmit::RxTimeoutTimer ,&hpw);
+	configASSERT(Ok == pdPASS);
+
 	// kopírujeme payload do packetu pro další zpracování
 	std::array<uint8_t, Packet::max_packet_size> buffer{};
 	std::memcpy(buffer.data(), payload, size);
@@ -221,9 +222,6 @@ bool DataTransmit::SendRquest(Packet::PacketType Type){
 	SlaveNotResponding = false;
 	RadioDriver->Standby( );
 	RadioDriver->Send(packet.Packet_output.data(), packet.Packet_output.size());
-
-	//auto Ok = xTimerStart(DataTransmit::RxTimeoutTimer,0);
-	//configASSERT(Ok == pdPASS);
 	return true;
 }
 
