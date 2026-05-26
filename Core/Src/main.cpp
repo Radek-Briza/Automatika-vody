@@ -36,6 +36,7 @@
 #include "App.hpp"
 #include "PumpControl.hpp"
 #include "DisplayModule.hpp"
+#include "ButtonControl.hpp"
 #include  "WdtSystemTask.hpp"
 /* USER CODE END Includes */
 
@@ -204,6 +205,8 @@ extern "C" int main(void)
   InitApplication();
 
   InitPumpSystem() ; 
+
+  ButtonControlInit();  
 
   vTaskStartScheduler(); 
 

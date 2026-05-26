@@ -10,13 +10,14 @@ bool PumpControler::PumpRun=false ;
 bool PumpControler::ErrorCondition=false ;
 TimerHandle_t PumpControler::PumpRunTimer=nullptr; 
 QueueHandle_t PumpControler::QueuePumpControl=nullptr;
-Message PumpControler::InMsg;
+Message PumpControler::msgDisplay;
+//MessageButton PumpControler::BtnMsg;
+
 
 
 [[maybe_unused]] 
 void PumpOvertimerCallback(TimerHandle_t xTimer)
 {
-    static  Message msgDisplay;
     configASSERT(PumpControler::RunLedControl   != nullptr) ;
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
     configASSERT(PumpControler::ErrorLedControl != nullptr) ;
@@ -30,12 +31,13 @@ void PumpOvertimerCallback(TimerHandle_t xTimer)
 
         //BSP_LED_On(LED_RED); 
         printf("Pump overtime - OFF\r\n");
+       
         /* error status for  display */
-        msgDisplay.MsgType = MsgDataType::PumpError;
-        msgDisplay.Data = 0; 
+         PumpControler::msgDisplay.MsgType = MsgDataType::PumpError;
+         PumpControler::msgDisplay.Data = 1;  // persist 
         auto ok = xQueueSend(
         QueueDisplay,
-        &msgDisplay ,
+        & PumpControler::msgDisplay ,
         pdMS_TO_TICKS(300)
         );
         configASSERT(ok  == pdPASS) ;
@@ -66,19 +68,21 @@ void PumpControler::ControlPump(){
     configASSERT(PumpControler::RunLedControl   != nullptr) ;
     configASSERT(PumpControler::PumpControlPin  != nullptr) ;
     configASSERT(PumpControler::ErrorLedControl != nullptr) ;
+    configASSERT(gButtonQueue != nullptr);
 
+    Message StatusMsg;
     auto ok= xQueueReceive(
                 QueuePumpControl,
-                &InMsg,
+                &StatusMsg,
                 0
             );
 
-    /* new message */
+    /* new message - level status */
     if(ok == pdPASS){
-        if(InMsg.MsgType == MsgDataType::LevelStatusData ){
+        if(StatusMsg.MsgType == MsgDataType::LevelStatusData ){
             if(!ErrorCondition){
 
-                switch (InMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
+                switch (StatusMsg.Data & (LEVEL_L | LEVEL_UNDER_M | LEVEL_H)){
                     
                     /* under max and middle - hysteresis */
                     case 0:
@@ -88,7 +92,6 @@ void PumpControler::ControlPump(){
                     case LEVEL_L:
                     if(! PumpRun){
                         PumpRun = true;
-                
                         auto Ok = xTimerStart(PumpRunTimer,0U);
                         configASSERT(Ok == pdPASS);
                         // gpio pump on 
@@ -125,5 +128,34 @@ void PumpControler::ControlPump(){
                 }
             }
         }
-     }    
+     }   
+    
+     MessageButton BtnMsg;
+     ok= xQueueReceive(
+                gButtonQueue,
+                &BtnMsg,
+                0
+            );
+
+    /* new message - button */
+    if(ok == pdPASS){
+        if(BtnMsg.buttonId==1 && BtnMsg.event == ButtonEventType::LongPress){
+            if(PumpControler::ErrorCondition == true){
+            PumpControler::ErrorCondition = false;
+            PumpControler::ErrorLedControl(false);
+            /* clear error status for  display */
+            msgDisplay.MsgType = MsgDataType::PumpError;
+            msgDisplay.Data = 0; // clear 
+            auto ok = xQueueSend(
+            QueueDisplay,
+            &msgDisplay ,
+            pdMS_TO_TICKS(300)
+            );
+            configASSERT(ok  == pdPASS) ;
+            }
+            printf("<<<< Cepadlo odblokovano >>>>\r\n");
+        }
+
+    }
+    
 }

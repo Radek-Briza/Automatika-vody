@@ -21,9 +21,11 @@ void DisplayTask(void* argument){
 			    printf("Actual level value: %u cm\n", static_cast<unsigned int>(msg.Data));
             }
             /* pump error  */
-            if(msg.MsgType == MsgDataType::PumpError ){        
+            if(msg.MsgType == MsgDataType::PumpError && msg.Data ==1){        
 			    printf("!!! CHYBA CERPADLA !!!!\n");
-            
+            }
+            if(msg.MsgType == MsgDataType::PumpError && msg.Data ==0){        
+			    printf("!!! CERPADLO ODBLOKOVANO !!!!\n");
             }
         }
     }   

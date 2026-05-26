@@ -67,16 +67,20 @@ void Error_Handler(void);
 #define RCC_OSC32_IN_GPIO_Port GPIOC
 #define RCC_OSC32_OUT_Pin GPIO_PIN_15
 #define RCC_OSC32_OUT_GPIO_Port GPIOC
-#define TRIGER_Pin GPIO_PIN_5
-#define TRIGER_GPIO_Port GPIOB
+#define PUMP_CONTROL_Pin GPIO_PIN_5
+#define PUMP_CONTROL_GPIO_Port GPIOB
 #define FE_CTRL3_Pin GPIO_PIN_3
 #define FE_CTRL3_GPIO_Port GPIOC
+#define BT_1_Pin GPIO_PIN_0
+#define BT_1_GPIO_Port GPIOA
 #define FE_CTRL2_Pin GPIO_PIN_5
 #define FE_CTRL2_GPIO_Port GPIOC
-#define ECHO_Pin GPIO_PIN_12
-#define ECHO_GPIO_Port GPIOB
 #define FE_CTRL1_Pin GPIO_PIN_4
 #define FE_CTRL1_GPIO_Port GPIOC
+#define BT_3_Pin GPIO_PIN_6
+#define BT_3_GPIO_Port GPIOC
+#define BT_2_Pin GPIO_PIN_1
+#define BT_2_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

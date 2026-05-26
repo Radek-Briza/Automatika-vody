@@ -2,7 +2,6 @@
 #ifndef PUMPCONTROLER_HPP_
 #define PUMPCONTROLER_HPP_
 
-#include "FreeRTOS.h" // IWYU pragma: keep.
 #include "Message.hpp" 
 #include "timers.h"
 #include <functional>
@@ -41,7 +40,7 @@ private:
     static bool ErrorCondition ;
     static TimerHandle_t PumpRunTimer; 
     static QueueHandle_t QueuePumpControl;
-    static Message InMsg;
+    static Message msgDisplay;
 
     friend void PumpOvertimerCallback(TimerHandle_t xTimer);
 };
