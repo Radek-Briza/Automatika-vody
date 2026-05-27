@@ -60,16 +60,17 @@
 COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
-[[maybe_unused]] 
-void GreenLedTask(void* argument)
-{ 
-    while (true)
-    {
-       BSP_LED_Toggle(LED_BLUE);
-        vTaskDelay(pdMS_TO_TICKS(250));
-    }
-}
+/* USER CODE END PV */
 
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 extern "C" void vApplicationMallocFailedHook(void) 
 {
     printf("Malloc failed\r\n");
@@ -85,20 +86,6 @@ extern "C" void vApplicationStackOverflowHook(TaskHandle_t, char*)
     {
     }
 }
-
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
