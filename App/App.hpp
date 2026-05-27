@@ -32,7 +32,7 @@ inline uint32_t ParsePayload(const std::vector<uint8_t>& data, std::size_t index
        printf("Error: Attempt to read beyond data bounds. Data size: %d, Requested offset: %d, Type size: %d\n",
        data.size(), offset, type_size);
        #endif
-       return 0xFFFFFFFFu; // Return max value to indicate error, or consider throwing an exception
+       return std::numeric_limits<uint32_t>::max(); // Return max value to indicate error, or consider throwing an exception
     }
 
     uint32_t result = 0;

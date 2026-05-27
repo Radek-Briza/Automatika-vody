@@ -125,7 +125,8 @@ void ResponseHandlerTask(void* argument){
 			if(DataTransmit::GetInstance().GetReceivedDataType()==Packet::Level_response){
 				uint32_t level_value = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 0);
 				uint32_t  level_status = ParsePayload<uint16_t>( DataTransmit::GetInstance().GetReceivedPayload(), 1); 
-				configASSERT( level_value not_eq 0xFFFFFFFF or level_status not_eq 0xFFFFFFFF);  
+				configASSERT( level_value not_eq std::numeric_limits<uint32_t>::max() 
+				              or level_status not_eq std::numeric_limits<uint32_t>::max());  
 			
 				/* display */
 				msgDisplay.MsgType = MsgDataType::LevelData;
