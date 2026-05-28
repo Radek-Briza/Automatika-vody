@@ -4,9 +4,7 @@
  *  Created on: 21. 4. 2026
  *      Author: radek
  */
-
-#ifndef RADIOPARAMS_HPP_
-#define RADIOPARAMS_HPP_
+#pragma once 
 
 #include "main.h"  // IWYU pragma: keep.
 
@@ -25,5 +23,3 @@ const bool SYMBOL_INVERTED		= true;
 const uint8_t PAYLOAD_LEN			= 0;
 const uint16_t SYMB_TIMEOUT		= 10000;  // pocet symbolu
 
-
-#endif /* RADIOPARAMS_HPP_ */

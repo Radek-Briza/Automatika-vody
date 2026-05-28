@@ -1,6 +1,4 @@
-
-#ifndef WDT_HPP_
-#define WDT_HPP_
+#pragma once 
 
 #include <atomic>
 
@@ -12,5 +10,3 @@ constexpr uint32_t TASK_PUMP_BIT = (1u << 0);
 constexpr uint32_t TASK_APP_BIT = (1u << 1);
 constexpr uint32_t TASK_REQ_SENDER_BIT = (1u << 2);
 constexpr uint32_t TASK_BTN_DRIVER_BIT = (1u << 3);
-
-#endif

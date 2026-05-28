@@ -5,8 +5,7 @@
  *      Author: radek
  */
 
-#ifndef DATATRANSMIT_HPP_
-#define DATATRANSMIT_HPP_
+#pragma once 
 
 #include "radio.h"
 #include "timer.h"
@@ -81,4 +80,4 @@ private:
 	friend void CadTimerCallback(TimerHandle_t xTimer);
 };
 
-#endif /* DATATRANSMIT_HPP_ */
+

@@ -1,6 +1,4 @@
-
-#ifndef MESSAGE_HPP_
-#define  MESSAGE_HPP_
+#pragma once 
 
 #include <cstdint>
 #include "FreeRTOS.h" // IWYU pragma: keep.
@@ -40,4 +38,4 @@ struct MessageButton{
  extern QueueHandle_t QueueLog;
  extern QueueHandle_t gButtonQueue;
 
- #endif
+ 

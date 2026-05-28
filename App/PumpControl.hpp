@@ -1,6 +1,4 @@
-
-#ifndef PUMPCONTROLER_HPP_
-#define PUMPCONTROLER_HPP_
+#pragma once 
 
 #include "Message.hpp" 
 #include "timers.h"
@@ -51,5 +49,3 @@ class PumpControler {
 
         friend void PumpOvertimerCallback(TimerHandle_t xTimer);
 };
-
-#endif 

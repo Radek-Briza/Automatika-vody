@@ -1,6 +1,4 @@
-
-#ifndef PACKET_HPP_
-#define PACKET_HPP_
+#pragma once 
 
 #include <array>
 #include <cstdint>
@@ -43,4 +41,3 @@ class Packet
     uint16_t ID; // Packet ID         
 };  
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef BUTTON_CONTROL_HPP_
-#define BUTTON_CONTROL_HPP_
+#pragma once
 
 #include "main.h"  // IWYU pragma: keep.
 #include "FreeRTOS.h" // IWYU pragma: keep.
@@ -30,4 +29,3 @@ struct ButtonContext{
 
 
 void ButtonControlInit(void);
-#endif

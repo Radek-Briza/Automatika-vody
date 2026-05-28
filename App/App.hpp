@@ -4,9 +4,7 @@
  *  Created on: 19. 4. 2026
  *      Author: radek
  */
-
-#ifndef APP_HPP_
-#define APP_HPP_
+#pragma once 
 
 #include "main.h" // IWYU pragma: keep.
 #include <cstdint>
@@ -52,4 +50,3 @@ extern "C" {
     void InitPumpSystem(void);
 }
 
-#endif /* APP_HPP_ */
